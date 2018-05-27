@@ -194,6 +194,7 @@ vec3 Phong_BRDF(vec3 L, vec3 V, vec3 N, vec3 diffuse_color, vec3 specular_color,
     //
     // TODO CS248: PART 1.1: implement diffuse and specular terms of the Phong
     // reflectance model here.
+    // Yao did it
     // 
     vec3 R = (2 * dot(N,L) * N - L); 
     diffuse_color = diffuse_color * L * max(0,dot(N,L)) +  diffuse_color * specular_color * max(0,pow(dot(R,V),specular_exponent)); 
@@ -252,11 +253,14 @@ void main(void)
 
     if (useBlending) {
 
+        //paint_color = texture2D(blendTextureSampler,texcoord).rgb;
         // TODO CS248: PART 1.2: compute diffuseColor and specularColor based on
         // the value of layer_blend_thresh.
 
-        diffuseColor = paint_color;
-        
+        //Yao Did it
+        float blend = clamp(layer_blend_thresh * (texture2D(blendTextureSampler, texcoord).g),0.0,1.0);
+
+        diffuseColor = paint_color * (1.0 - blend) + texture2D(diffuseTextureSampler, texcoord).rgb * blend;
     }
 
 
