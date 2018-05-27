@@ -195,6 +195,9 @@ vec3 Phong_BRDF(vec3 L, vec3 V, vec3 N, vec3 diffuse_color, vec3 specular_color,
     // TODO CS248: PART 1.1: implement diffuse and specular terms of the Phong
     // reflectance model here.
     // 
+    vec3 R = (2 * dot(N,L) * N - L); 
+    diffuse_color = diffuse_color * L * max(0,dot(N,L)) +  diffuse_color * specular_color * max(0,pow(dot(R,V),specular_exponent)); 
+  
     return diffuse_color;
 
 }
@@ -238,7 +241,7 @@ void main(void)
     //////////////////////////////////////////////////////////////////////////
     
 	vec3 diffuseColor = vec3(1.0);
-    vec3 specularColor = vec3(1.0);
+    vec3 specularColor = vec3(1.0,1.0,1.0);
     float specularExponent = 20.;
 
     if (useTextureMapping) {
