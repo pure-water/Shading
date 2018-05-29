@@ -228,7 +228,13 @@ vec3 SampleEnvironmentMap(vec3 D)
      // (3) How do you convert theta and phi to normalized texture
      //     coordinates in the domain [0,1]^2?
 
-     return vec3(.25, .25, .25);
+    float u = atan2(D.x, D.y) / (2*PI) + 0.5;
+
+    float v = D.z * 0.5 + 0.5;
+    vec2  env_texcoord = normalize(vec2(u,v));
+    vec3  env_color = texture2D(environmentTextureSampler,texcoord).rgb; 
+
+     return env_color; 
      
 }
 
@@ -258,7 +264,8 @@ void main(void)
         // the value of layer_blend_thresh.
 
         //Yao Did it
-        float blend = clamp(layer_blend_thresh * (texture2D(blendTextureSampler, texcoord).g),0.0,1.0);
+        //favor 1 float blend = clamp(layer_blend_thresh * (texture2D(blendTextureSampler, texcoord).g),0.0,1.0);
+        float blend = layer_blend_thresh > texture2D(blendTextureSampler,texcoord).r ? layer_blend_thresh * texture2D(blendTextureSampler, texcoord).r : 0.f;
 
         diffuseColor = paint_color * (1.0 - blend) + texture2D(diffuseTextureSampler, texcoord).rgb * blend;
     }
@@ -298,7 +305,8 @@ void main(void)
         // TODO: CS248 PART 2: compute perfect mirror reflection direction here.
         // You'll also need to implement environment map sampling in SampleEnvironmentMap()
         //
-        vec3 R = normalize(vec3(1.0));
+        //vec3 R = normalize(vec3(1.0));
+        vec3 R = normalize( 2 * N * dot(N,V) - V);
 
         color = SampleEnvironmentMap(R);
         gl_FragColor = vec4(color, 1);
