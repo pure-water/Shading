@@ -228,9 +228,9 @@ vec3 SampleEnvironmentMap(vec3 D)
      // (3) How do you convert theta and phi to normalized texture
      //     coordinates in the domain [0,1]^2?
 
-    float u = atan2(D.x, D.y) / (2*PI) + 0.5;
+    float u = atan2(D.x, D.z) / (2*PI) + 0.5;
 
-    float v = D.z * 0.5 + 0.5;
+    float v = D.y * 0.5 + 0.5;
     vec2  env_texcoord = normalize(vec2(u,v));
     vec3  env_color = texture2D(environmentTextureSampler,texcoord).rgb; 
 
@@ -290,7 +290,7 @@ void main(void)
        // In other words:   tangent_space_normal = texture_value * 2.0 - 1.0;
 
        // replace this line with your implementation
-       N = normalize(normal);
+       N = normalize(tan2world * (texture2D(normalTextureSampler,texcoord).rgb * 2.0 -1)) ;
        
     } else {
        N = normalize(normal);

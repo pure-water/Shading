@@ -23,6 +23,7 @@ varying mat3 tan2world;                 // tangent space rotation matrix multipl
 void main(void)
 {
     position = vec3(obj2world * vec4(vtx_position, 1));
+    mat3 TBN;
 
     if (useNormalMapping) {
 
@@ -35,14 +36,17 @@ void main(void)
        // (1) Make sure you normalize all columns of the matrix so that it is a rotation matrix.
        //
        // (2) You can initialize a 3x3 matrix using 3 vectors as shown below:
-       // vec3 a, b, c;
-       // mat3 mymatrix = mat3(a, b, c)
+       vec3 t = normalize(vec3(vtx_tangent));
+       vec3 n = normalize(vec3(vtx_normal));
+       vec3 b = normalize(cross(n,t)); 
+
+       TBN = mat3(t, b, n);
 
        // (3) obj2worldNorm is a 3x3 matrix transforming object space normals to world space normals
 
-       
+       normal = normalize(obj2worldNorm  * vtx_normal); 
        // pass through object-space normal unmodified to fragment shader
-       normal = vtx_normal;
+       // normal = vtx_normal;
        
     } else {
 
@@ -53,5 +57,6 @@ void main(void)
     vertex_diffuse_color = vtx_diffuse_color;
     texcoord = vtx_texcoord;
     dir2camera = camera_position - position;
+    tan2world =  obj2worldNorm * inverse(TBN) ;
     gl_Position = gl_ModelViewProjectionMatrix * vec4(vtx_position, 1);
 }
