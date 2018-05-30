@@ -36,6 +36,7 @@ void main(void)
        // (1) Make sure you normalize all columns of the matrix so that it is a rotation matrix.
        //
        // (2) You can initialize a 3x3 matrix using 3 vectors as shown below:
+       // Yao did it
        vec3 t = normalize(vec3(vtx_tangent));
        vec3 n = normalize(vec3(vtx_normal));
        vec3 b = normalize(cross(n,t)); 

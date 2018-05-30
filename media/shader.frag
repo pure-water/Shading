@@ -196,10 +196,15 @@ vec3 Phong_BRDF(vec3 L, vec3 V, vec3 N, vec3 diffuse_color, vec3 specular_color,
     // reflectance model here.
     // Yao did it
     // 
-    vec3 R = (2 * dot(N,L) * N - L); 
-    diffuse_color = diffuse_color * L * max(0,dot(N,L)) +  diffuse_color * specular_color * max(0,pow(dot(R,V),specular_exponent)); 
+    vec3 R = normalize(2 * dot(N,L) * N - L); 
+    //vec3 brdf_color = diffuse_color * L * max(0,dot(N,L)) +    specular_color * pow(max(0,dot(R,V)),specular_exponent); 
+
+    vec3 brdf_color = diffuse_color * L * max(0,dot(N,L)); 
+
+    brdf_color += specular_color * L* pow(max(0,dot(R,V)),specular_exponent); 
+
   
-    return diffuse_color;
+    return brdf_color;
 
 }
 
@@ -248,10 +253,10 @@ void main(void)
     //////////////////////////////////////////////////////////////////////////
     
 	vec3 diffuseColor = vec3(1.0);
-    vec3 specularColor = vec3(1.0,1.0,1.0);
-    float specularExponent = 20.;
+    vec3 specularColor = vec3(1.0);
+    float specularExponent = 20.0;
 
-    if (useTextureMapping) {
+    if (useTextureMapping) { 
         diffuseColor = texture2D(diffuseTextureSampler, texcoord).rgb;
     } else {
         diffuseColor = vertex_diffuse_color;
@@ -290,7 +295,7 @@ void main(void)
        // In other words:   tangent_space_normal = texture_value * 2.0 - 1.0;
 
        // replace this line with your implementation
-       N = normalize(tan2world * (texture2D(normalTextureSampler,texcoord).rgb * 2.0 -1)) ;
+       N = normalize(tan2world * (texture2D(normalTextureSampler,texcoord).rgb * 2.0 -1.0)) ;
        
     } else {
        N = normalize(normal);
@@ -332,6 +337,8 @@ void main(void)
         if (useDisneyBRDF) {
             brdf_color = 5.0 * Disney_BRDF(L, V, N, X, Y, diffuseColor);
         } else {
+            //brdf_color = 5.0 * Disney_BRDF(L, V, N, X, Y, diffuseColor);
+            //brdf_color = 5.0 * Disney_BRDF(L, V, N, X, Y, diffuseColor);
             brdf_color = Phong_BRDF(L, V, N, diffuseColor, specularColor, specularExponent);
         }
         color += light_mag * brdf_color;
