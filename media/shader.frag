@@ -196,15 +196,11 @@ vec3 Phong_BRDF(vec3 L, vec3 V, vec3 N, vec3 diffuse_color, vec3 specular_color,
     // reflectance model here.
     // Yao did it
     // 
-    vec3 R = normalize(2 * dot(N,L) * N - L); 
-    //vec3 brdf_color = diffuse_color * L * max(0,dot(N,L)) +    specular_color * pow(max(0,dot(R,V)),specular_exponent); 
+    
+    vec3 R = (2 * dot(N,L) * N - L); 
+    diffuse_color  = diffuse_color * L * max(0,dot(N,L)) +    L * specular_color * pow(max(0,dot(R,V)),specular_exponent); 
 
-    vec3 brdf_color = diffuse_color * L * max(0,dot(N,L)); 
-
-    brdf_color += specular_color * L* pow(max(0,dot(R,V)),specular_exponent); 
-
-  
-    return brdf_color;
+    return diffuse_color;
 
 }
 
@@ -337,9 +333,8 @@ void main(void)
         if (useDisneyBRDF) {
             brdf_color = 5.0 * Disney_BRDF(L, V, N, X, Y, diffuseColor);
         } else {
-            //brdf_color = 5.0 * Disney_BRDF(L, V, N, X, Y, diffuseColor);
-            //brdf_color = 5.0 * Disney_BRDF(L, V, N, X, Y, diffuseColor);
             brdf_color = Phong_BRDF(L, V, N, diffuseColor, specularColor, specularExponent);
+            //brdf_color = 5.0 * Disney_BRDF(L, V, N, X, Y, diffuseColor);
         }
         color += light_mag * brdf_color;
     }
@@ -354,6 +349,7 @@ void main(void)
             brdf_color = 5.0 * Disney_BRDF(L, V, N, X, Y, diffuseColor);
         } else {
             brdf_color = Phong_BRDF(L, V, N, diffuseColor, specularColor, specularExponent);
+            //brdf_color = 5.0 * Disney_BRDF(L, V, N, X, Y, diffuseColor);
         }
         float falloff = 1.0 / (0.01 + distance * distance);
         color += light_mag * falloff * brdf_color;
