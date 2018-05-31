@@ -198,9 +198,9 @@ vec3 Phong_BRDF(vec3 L, vec3 V, vec3 N, vec3 diffuse_color, vec3 specular_color,
     // 
     
     vec3 R = (2 * dot(N,L) * N - L); 
-    diffuse_color  = diffuse_color * L * max(0,dot(N,L)) +    L * specular_color * pow(max(0,dot(R,V)),specular_exponent); 
+    vec3 brdf_color  = diffuse_color *  max(0,dot(N,L))  +    specular_color * pow(max(0,dot(R,V)),specular_exponent); 
 
-    return diffuse_color;
+    return brdf_color;
 
 }
 
@@ -334,7 +334,6 @@ void main(void)
             brdf_color = 5.0 * Disney_BRDF(L, V, N, X, Y, diffuseColor);
         } else {
             brdf_color = Phong_BRDF(L, V, N, diffuseColor, specularColor, specularExponent);
-            //brdf_color = 5.0 * Disney_BRDF(L, V, N, X, Y, diffuseColor);
         }
         color += light_mag * brdf_color;
     }
